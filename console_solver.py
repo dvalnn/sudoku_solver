@@ -4,7 +4,7 @@ from time import sleep
 
 def print_grid(board: list):
     for line in board:
-        print(line)
+        print(line, flush=True)
 
 
 def map_pos(board: list, pos: tuple) -> tuple:
@@ -20,9 +20,9 @@ def map_pos(board: list, pos: tuple) -> tuple:
     block = get_block(board, block_id)
 
     # create dictionaries with number of occurrences
-    row_map = {num: row.count(num) for num in range(1, 10)}
-    column_map = {num: column.count(num) for num in range(1, 10)}
-    block_map = {num: block.count(num) for num in range(1, 10)}
+    row_map = {num: num in row for num in range(1, 10)}
+    column_map = {num: num in column for num in range(1, 10)}
+    block_map = {num: num in block for num in range(1, 10)}
 
     return row_map, column_map, block_map
 
@@ -42,6 +42,9 @@ def find_missing(board: list) -> tuple:
 
 
 def solve_sudoku(board: list, show_steps=False) -> bool:
+    global steps
+    steps += 1
+
     # find index of cell with value 0
     pos = find_missing(board)
 
@@ -65,9 +68,9 @@ def solve_sudoku(board: list, show_steps=False) -> bool:
             if show_steps:
                 print("\nattempting:", attempt, "at pos:", pos)
                 print_grid(board)
-                sleep(0.01)
+                sleep(0.001)
             # recursive call with updated cell
-            if (solve_sudoku(board)):
+            if (solve_sudoku(board, show_steps=show_steps)):
                 return True
 
     # attemps where unsuccessful, reset cell
@@ -79,10 +82,11 @@ def main(board: list):
     print("Inital board: ")
     print_grid(board)
 
-    if(solve_sudoku(board)):
+    if(solve_sudoku(board, show_steps=True)):
         print("\nFound solution:")
         print_grid(board)
         print("\nSolution is valid:", valid_solution(board))
+        print(f"Total steps taken: {steps}")
 
     else:
         print("\nGiven board is unsolvable")
@@ -90,16 +94,6 @@ def main(board: list):
 
 if __name__ == '__main__':
     # testing boards
-    board = [[3, 0, 6, 5, 0, 8, 4, 0, 0],
-             [5, 2, 0, 0, 0, 0, 0, 0, 0],
-             [0, 8, 7, 0, 0, 0, 0, 3, 1],
-             [0, 0, 3, 0, 1, 0, 0, 8, 0],
-             [9, 0, 0, 8, 6, 3, 0, 0, 5],
-             [0, 5, 0, 0, 9, 0, 6, 0, 0],
-             [1, 3, 0, 0, 0, 0, 2, 5, 0],
-             [0, 0, 0, 0, 0, 0, 0, 7, 4],
-             [0, 0, 5, 2, 0, 6, 3, 0, 0]]
-
     # board = [[3, 0, 6, 5, 0, 8, 4, 0, 0],
     #          [5, 2, 0, 0, 0, 0, 0, 0, 0],
     #          [0, 8, 7, 0, 0, 0, 0, 3, 1],
@@ -109,6 +103,16 @@ if __name__ == '__main__':
     #          [1, 3, 0, 0, 0, 0, 2, 5, 0],
     #          [0, 0, 0, 0, 0, 0, 0, 7, 4],
     #          [0, 0, 5, 2, 0, 6, 3, 0, 0]]
+
+    board = [[3, 0, 6, 5, 0, 8, 4, 0, 0],
+             [5, 2, 0, 0, 0, 0, 0, 0, 0],
+             [0, 8, 7, 0, 0, 0, 0, 3, 1],
+             [0, 0, 3, 0, 1, 0, 0, 8, 0],
+             [9, 0, 0, 8, 6, 3, 0, 0, 5],
+             [0, 5, 0, 0, 9, 0, 6, 0, 0],
+             [1, 3, 0, 0, 0, 0, 2, 5, 0],
+             [0, 0, 0, 0, 0, 0, 0, 7, 4],
+             [0, 0, 5, 2, 0, 6, 3, 0, 0]]
 
     # board = [[0, 0, 0, 0, 0, 0, 0, 0, 0],
     #          [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -129,5 +133,18 @@ if __name__ == '__main__':
     #          [0, 0, 0, 0, 0, 0, 0, 0, 0],
     #          [0, 0, 0, 0, 0, 0, 0, 0, 0],
     #          [0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+    # board = [[7, 0, 0, 1, 0, 8, 0, 0, 0],
+    #          [0, 9, 0, 0, 0, 0, 0, 3, 2],
+    #          [0, 0, 0, 0, 0, 5, 0, 0, 0],
+    #          [0, 0, 0, 0, 0, 0, 1, 0, 0],
+    #          [9, 6, 0, 0, 2, 0, 0, 0, 0],
+    #          [0, 0, 0, 0, 0, 0, 8, 0, 0],
+    #          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #          [0, 0, 5, 0, 0, 1, 0, 0, 0],
+    #          [3, 2, 0, 0, 0, 0, 0, 0, 6]]
+
+    global rec_depth, steps
+    rec_depth = steps = 0
 
     main(board)
