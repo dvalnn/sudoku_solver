@@ -9,17 +9,14 @@ def print_grid(board: list):
 
 def map_pos(board: list, pos: tuple) -> tuple:
 
-    # unpack position argument
-    i, j = pos
-
     # create a list with the valid values of the row specified by pos
-    row = [number for number in board[i] if number]
+    row = [number for number in board[pos[0]] if number]
 
     # create a list with the valid values of the column specified by pos
-    column = [board[x][j] for x in range(len(board))]
+    column = [board[x][pos[1]] for x in range(len(board))]
 
     # create list with the valid values for the block specified by pos
-    block_id = i//3 * 3 + j//3
+    block_id = pos[0]//3 * 3 + pos[1]//3
     block = get_block(board, block_id)
 
     # create dictionaries with number of occurrences
@@ -44,7 +41,7 @@ def find_missing(board: list) -> tuple:
     return None
 
 
-def solve_sudoku(board: list) -> bool:
+def solve_sudoku(board: list, show_steps=False) -> bool:
     # find index of cell with value 0
     pos = find_missing(board)
 
@@ -65,9 +62,10 @@ def solve_sudoku(board: list) -> bool:
         for attempt in candidates:
             board[pos[0]][pos[1]] = attempt
             # some code to allow visualization of the algorithm. Can be commented/removed
-            print("\nattempting:", attempt, "at pos:", pos)
-            print_grid(board)
-            sleep(0.01)
+            if show_steps:
+                print("\nattempting:", attempt, "at pos:", pos)
+                print_grid(board)
+                sleep(0.01)
             # recursive call with updated cell
             if (solve_sudoku(board)):
                 return True
